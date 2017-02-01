@@ -1,5 +1,8 @@
 %?mingw_package_header
 
+# Set this to one when mingw-qt5-qtwebkit isn't built yet
+%global bootstrap 1
+
 %global qt_module qtquick1
 #%%global pre rc1
 
@@ -17,7 +20,7 @@
 
 Name:           mingw-qt5-%{qt_module}
 Version:        5.5.1
-Release:        3%{?pre:.%{pre}}%{?snapshot_date:.git%{snapshot_date}.%{snapshot_rev}}%{?dist}
+Release:        4%{?pre:.%{pre}}%{?snapshot_date:.git%{snapshot_date}.%{snapshot_rev}}%{?dist}
 Summary:        Qt5 for Windows - QtQuick1 component
 
 License:        GPLv3 with exceptions or LGPLv2 with exceptions
@@ -32,7 +35,7 @@ Source0:        qt5-%{qt_module}-%{snapshot_rev}.tar.gz
 %if "%{?pre}" != ""
 Source0:        http://download.qt-project.org/development_releases/qt/%{release_version}/%{version}-%{pre}/submodules/%{qt_module}-opensource-src-%{version}-%{pre}.tar.xz
 %else
-Source0:        http://download.qt-project.org/official_releases/qt/%{release_version}/%{version}/submodules/%{qt_module}-opensource-src-%{version}.tar.xz
+Source0:        http://download.qt-project.org/archive/qt/%{release_version}/%{version}/submodules/%{qt_module}-opensource-src-%{version}.tar.xz
 %endif
 %endif
 
@@ -42,13 +45,17 @@ BuildRequires:  mingw32-filesystem >= 96
 BuildRequires:  mingw32-qt5-qtbase >= 5.5.1
 BuildRequires:  mingw32-qt5-qtscript >= 5.5.1
 BuildRequires:  mingw32-qt5-qttools >= 5.5.1
+%if 0%{bootstrap} == 0
 BuildRequires:  mingw32-qt5-qtwebkit >= 5.5.1
+%endif
 
 BuildRequires:  mingw64-filesystem >= 96
 BuildRequires:  mingw64-qt5-qtbase >= 5.5.1
 BuildRequires:  mingw64-qt5-qtscript >= 5.5.1
 BuildRequires:  mingw64-qt5-qttools >= 5.5.1
+%if 0%{bootstrap} == 0
 BuildRequires:  mingw64-qt5-qtwebkit >= 5.5.1
+%endif
 
 
 %description
@@ -134,7 +141,9 @@ find $RPM_BUILD_ROOT%{mingw64_prefix} | grep .dll | grep -v .dll.a | sed s@"^$RP
 %{mingw32_libdir}/qt5/plugins/designer/qdeclarativeview.dll
 %dir %{mingw32_datadir}/qt5/imports/
 %{mingw32_datadir}/qt5/imports/Qt/
+%if 0%{bootstrap} == 0
 %{mingw32_datadir}/qt5/imports/QtWebKit/
+%endif
 %{mingw32_datadir}/qt5/imports/builtins.qmltypes
 %{mingw32_datadir}/qt5/mkspecs/modules/qt_lib_declarative.pri
 %{mingw32_datadir}/qt5/mkspecs/modules/qt_lib_declarative_private.pri
@@ -153,13 +162,19 @@ find $RPM_BUILD_ROOT%{mingw64_prefix} | grep .dll | grep -v .dll.a | sed s@"^$RP
 %{mingw64_libdir}/qt5/plugins/designer/qdeclarativeview.dll
 %dir %{mingw64_datadir}/qt5/imports/
 %{mingw64_datadir}/qt5/imports/Qt/
+%if 0%{bootstrap} == 0
 %{mingw64_datadir}/qt5/imports/QtWebKit/
+%endif
 %{mingw64_datadir}/qt5/imports/builtins.qmltypes
 %{mingw64_datadir}/qt5/mkspecs/modules/qt_lib_declarative.pri
 %{mingw64_datadir}/qt5/mkspecs/modules/qt_lib_declarative_private.pri
 
 
 %changelog
+* Wed Feb 01 2017 Jajauma's Packages <jajauma@yandex.ru> - 5.5.1-4
+- Bootstrap build
+- Update D/L URL to download.qt-project.org/archive
+
 * Thu Apr  7 2016 Erik van Pienbroek <epienbro@fedoraproject.org> - 5.5.1-3
 - Rebuild against mingw-qt5-qtbase 5.6.0
 
